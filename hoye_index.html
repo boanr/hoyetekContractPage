@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SFDC 報備自動化系統</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+<style>
+body {
+  font-family: Arial;
+  padding: 20px;
+}
+
+input, select {
+  display: block;
+  margin: 8px 0;
+  padding: 8px;
+  width: 250px;
+}
+
+button {
+  margin-top: 10px;
+  padding: 10px;
+  background: blue;
+  color: white;
+  border: none;
+}
+
+#products {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 10px;
+}
+</style>
+</head>
+
+
+
+<body class="bg-gray-100 font-sans text-gray-900 min-h-screen">
+  <div class="max-w-4xl mx-auto p-6">
+    <!-- 導覽列 -->
+    <nav class="flex justify-between items-center bg-white p-4 rounded-lg shadow mb-6">
+      <span class="text-xl font-bold text-blue-600">線上表單</span>
+    </nav>
+
+    <!-- 表單分頁 -->
+    <div id="form-tab" class="tab-content bg-white p-8 rounded-lg shadow">
+      <h1 class="text-2xl font-bold mb-2 text-blue-700">合研科技軟體評估、軟體專案、軟體詢價</h1>
+      <p class="text-sm text-gray-600 mb-6">若您有任何軟體上面的諮詢，歡迎您利用線上聯繫表單與我司聯繫。</p>
+      <form id="sfdcForm" onsubmit="handleSubmit(event)" class="space-y-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700">姓名 *</label>
+            <input type="text" id="name" required class="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">電子郵件 *</label>
+            <input type="email" id="email" required class="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">聯絡電話 *</label>
+            <input type="text" id="phone" required class="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm">
+          </div>
+		  <div>
+            <label class="block text-sm font-medium text-gray-700">公司中文名稱 *</label>
+            <input type="text" id="company_cn" required class="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700">公司英文名稱 *</label>
+            <input type="text" id="company_en" required class="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm">
+          </div>
+        </div>
+		<div>
+          <label class="block text-sm font-medium text-gray-700">公司英文地址 *</label>
+          <input type="text" id="address" required class="mt-1 block w-full p-2 border border-gray-300 rounded shadow-sm">
+        </div>
+		<div class="mt-4">
+		  <label class="block text-sm font-medium text-gray-700 mb-2">授權類型 *</label>
+
+		  <div class="flex items-center gap-8">
+
+			<label class="flex items-center gap-2 cursor-pointer">
+			  <input type="radio" name="license_type" value="Subscription">
+			  <span>訂閱</span>
+			</label>
+
+			<label class="flex items-center gap-2 cursor-pointer">
+			  <input type="radio" name="license_type" value="Perpetual">
+			  <span>永久買斷</span>
+			</label>
+
+		  </div>
+		</div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">要報備的產品 (至少選擇一項) *</label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 bg-gray-50 p-4 rounded border border-gray-200" id="productContainer">
+            <!-- 動態插入產品核取方塊 -->
+          </div>
+        </div>
+
+        <button type="submit" id="submitBtn" class="w-full bg-blue-600 text-white p-3 rounded font-bold hover:bg-blue-700 transition">送出報備</button>
+      </form>
+	                  
+    </div>
+<!-- 頁尾聯絡資訊 -->
+<div class="mt-12 pt-8 border-t border-gray-200">
+
+  <div class="grid md:grid-cols-2 gap-8">
+
+    <!-- 左側聯絡資訊 -->
+    <div>
+      <h3 class="text-lg font-semibold text-blue-500 mb-4">
+        聯絡資訊
+      </h3>
+
+      <div class="space-y-2 text-gray-700">
+        <p>合研科技股份有限公司</p>
+        <p>地址：11494 台北市內湖區行忠路42號5樓</p>
+        <p>TEL：02-87914423</p>
+        <p>FAX：02-87918065</p>
+
+        <p>
+          Email：
+          <a href="mailto:service@hoyetek.com"
+             class="text-blue-600 hover:underline">
+            service@hoyetek.com
+          </a>
+        </p>
+
+        <p>
+          Youtube：
+          <a href="https://www.youtube.com/user/Hoyetek"
+             target="_blank"
+             class="text-blue-600 hover:underline">
+            Hoyetek Channel
+          </a>
+        </p>
+      </div>
+    </div>
+
+    <!-- 右側LINE -->
+    <div class="text-center">
+      <h3 class="text-lg font-semibold text-blue-500 mb-4">
+	  <img
+		  src="https://www.hoyetek.com/WP/wp-content/uploads/elementor/thumbs/lineQRCOD-qcqiy6ykd70rfr6g70zmtq3ggriqgu9i6k7dn9i18k.png"
+		  alt="LINE QR Code"
+		  class="w-48 mx-auto"
+	  />
+      <p class="mt-3 text-sm text-gray-500">
+        掃描 QR Code 加入 LINE 好友
+      </p>
+    </div>
+
+  </div>
+
+</div>
+  <script>
+const products = [
+  "NX CAD", "SC 3D", "SC FloEFD", "SC Flotherm",
+  "SC Flomaster", "SC ROM", "NX CAM", "HEEDS",
+  "TeamCenter", "Plant Simulation", "VSA", "Femap",
+  "Star-CCM+", "SE", "SE FloEFD", "SE CAM",
+  "SC infolytica", "SC SPEED", "Amesim", "Hyperworks", "Tecnomatix"
+];
+
+// 初始化產品核取方塊
+const container = document.getElementById('productContainer');
+products.forEach(p => {
+  const label = document.createElement('label');
+	label.className = "flex items-center space-x-2 text-sm bg-white p-2 rounded border hover:bg-blue-50 cursor-pointer";
+
+	label.innerHTML = `
+	  <input type="checkbox" value="${p}" class="w-4 h-4">
+	  <span>${p}</span>
+	`;
+  container.appendChild(label);
+});
+
+// 表單送出
+const form = document.getElementById("sfdcForm");
+const btn = document.getElementById("submitBtn");
+
+form.onsubmit = async (e) => {
+    e.preventDefault();
+
+    btn.disabled = true;
+    btn.innerText = "送出中...";
+	const employee = document.getElementById("employee").value;
+
+    if (!employee) {
+        alert("請選擇填表人");
+        btn.disabled = false;
+        btn.innerText = "送出報備";
+        return;
+    }
+	
+    const selectedProducts = [...document.querySelectorAll("#productContainer input:checked")]
+        .map(cb => cb.value);
+
+    if (selectedProducts.length === 0) {
+        alert("請至少選擇一個產品");
+        btn.disabled = false;
+        btn.innerText = "送出";
+        return;
+    }
+
+    try {
+			const data = {
+				UserName: document.getElementById("name").value,
+				Email: document.getElementById("email").value,
+				Phone: document.getElementById("phone").value,
+				Company_name: document.getElementById("company_cn").value,
+				EnCompany_name: document.getElementById("company_en").value,
+				Address: document.getElementById("address").value,
+				License_Type: document.querySelector('input[name="license_type"]:checked')?.value,
+				Product_Interest: selectedProducts, // 陣列
+				employee: "Other"
+			};
+		
+
+			await fetch(
+			  "https://curly-firefly-64e0.oliver-477.workers.dev/api/v1/leads",
+			  {
+				method: "POST",
+				headers: {
+				  "Content-Type": "application/json"
+				},
+				body: JSON.stringify(data)
+			  }
+			);
+
+			alert("✅ 已送出");
+    } catch (err) {
+        alert("❌ 發送失敗: " + err);
+    }
+
+    btn.disabled = false;
+    btn.innerText = "送出";
+};
+
+
+	
+
+
+</script>
+
+</body>
+</html>
